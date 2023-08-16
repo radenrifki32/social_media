@@ -44,14 +44,19 @@ export class PostService {
         }
 
     }
-    async GetPost(id_category: string): Promise<PostWithCategoryAndUser[]> {
+    async GetPost(id_category?: string,token? : string): Promise<PostWithCategoryAndUser[]> {
         try {
-            const getAllPostWithCategoryAndUser = await this.prismaService.post.findMany({
-                where: {
-                    id_category: id_category
-                },
+            const decodeJwt: string | { [key: string]: any } = await this.jwtService.verifyAsync(token, {
+                secret: jwtConstant.secretKey
+            })
+            let postQuery = {
                 include: {
-
+                    _count : {
+                        select : {
+                            like : true
+                        }
+                      },
+                   
                     category: {
                         select: {
                             name_category: true
@@ -62,18 +67,45 @@ export class PostService {
                             username: true,
                             email: true
                         }
+                    },
+                    comment : {
+                        where : {
+                            parent_comment_id : null 
+                        },
+                        include : {
+                            children : {
+                                include : {
+                                    children : {
+                                        select : {
+                                            comment_body : true,
+                                            parent_comment_id : true
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        
                     }
                 }
-
-            })
-            return getAllPostWithCategoryAndUser
+            };
+    
+            if (id_category) {
+                postQuery['where'] = {
+                    id_category: id_category
+                };
+            }
+    
+            const getAllPostWithCategoryAndUser = await this.prismaService.post.findMany(postQuery);
+    
+            return getAllPostWithCategoryAndUser;
         } catch (error) {
-            throw new Error(error)
+            console.log(error)
+            throw new Error(error);
         } finally {
-            await this.prismaService.$disconnect
+            await this.prismaService.$disconnect();
         }
-
     }
+    
     async yourPost(token: string): Promise<PostWithCategory[]> {
         try {
             const decodeJwt: string | { [key: string]: any } = await this.jwtService.verifyAsync(token, {
@@ -98,6 +130,36 @@ export class PostService {
         }
 
     }
+
+    async postById (id :string,) : Promise<PostWithCategoryAndUser> {
+       
+        const post = await this.prismaService.post.findFirst({
+            where : {
+             id  : id
+            },
+            include : {
+                _count : {
+                    select : {
+                        like :true
+                    },
+                },
+               
+                user : {
+                    select : {
+                        username : true ,
+                        email : true
+                    }
+                },
+                category : {
+                    select : { 
+                        name_category : true
+                    }
+                }
+            }
+        })
+return post
+    }
+    
 
 
 }

@@ -8,13 +8,16 @@ import { PostModule } from './post/post.module';
 import { ZodValidationPipe } from 'nestjs-zod'
 import { APP_PIPE } from '@nestjs/core'
 import { ThrottlerModule } from '@nestjs/throttler';
+import { LikeModule } from './like/like.module';
+import { CommentModule } from './comment/comment.module';
+import { FavoriteModule } from './favorite/favorite.module';
 
 
 @Module({
   imports: [AuthModule,UserModule, BookmarkModule,CategoryModule, CloudinaryModule,PostModule,ThrottlerModule.forRoot({
     ttl : 60,
     limit : 10
-  })],
+  }), LikeModule, CommentModule, FavoriteModule],
   providers :[
    
   ]

@@ -1,7 +1,7 @@
-import { Controller,Post,UploadedFile,UseInterceptors,Body, Headers, Res, HttpStatus, UseGuards, Get } from "@nestjs/common";
+import { Controller,Post,UploadedFile,UseInterceptors,Body, Headers, Res, HttpStatus, UseGuards, Get, Param, ParseIntPipe, Head } from "@nestjs/common";
 import { PostService } from "./post.service";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { PostDtoBody, PostWithCategory, PostWithCategoryAndUser, ResponsePost } from "./post.dto";
+import { PostDtoBody, PostResponse, PostWithCategory, PostWithCategoryAndUser, ResponsePost } from "./post.dto";
 import { HelperResponse } from "src/utils/HelperResponse";
 import { Response } from "express";
 import { AuthGuard } from "src/auth/auth.guard";
@@ -25,11 +25,13 @@ export class PostController {
     }
  } 
  @Get("")
- async getPost(@Res() res : Response , @Body() body) {
+ async getPost(@Res() res : Response ,@Param("id_category") id_category,@Headers() header) {
     const helperResponse = new HelperResponse(res);
 try {
-    const post : PostWithCategoryAndUser[] = await this.postService.GetPost(body.id_category)
-  helperResponse.SuccessResponse<PostWithCategoryAndUser[]>("Berhasil", post , HttpStatus.OK) 
+    const token = header?.authorization?.split(" ")[1]
+
+    const post : PostWithCategoryAndUser[] = await this.postService.GetPost(id_category,token)
+    helperResponse.SuccessResponse<PostWithCategoryAndUser[]>("Berhasil", post , HttpStatus.OK)   
 } catch (error) {
     helperResponse.errorResponse(error,HttpStatus.INTERNAL_SERVER_ERROR)
 }
@@ -48,6 +50,20 @@ try {
     } catch (error) {
         helperResponse.errorResponse(error,HttpStatus.INTERNAL_SERVER_ERROR)
     }
+ }
+ @Get("/:id")
+ async GetPostById ( @Param('id') id , @Res() res :Response, @Headers() header){
+    const token = header?.authorization?.split(" ")[1]
+
+    const helperResponse = new HelperResponse(res);
+try {
+    const postById = await this.postService.postById(id);
+     helperResponse.SuccessResponse<PostWithCategoryAndUser>("Berhasil",postById,HttpStatus.OK)  
+} catch (error) {
+    helperResponse.errorResponse(error,HttpStatus.INTERNAL_SERVER_ERROR)
+}
+  
+
  }
 
 }

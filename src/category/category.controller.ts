@@ -25,7 +25,6 @@ async  PostCategory(@Body() body :Category, @Res() res : Response )  {
     }
   
 }   
-
 @Get()
 async getAllCategory(@Res() res : Response){
     const helperResponse = new HelperResponse(res);

@@ -9,6 +9,9 @@ export class ResponsePost {
     message : string
     post_id : string
 }
+export type PostResponse = { 
+    enc : string
+}
 
 export type PostWithCategory = Prisma.PostGetPayload<{
     include: {
@@ -22,6 +25,12 @@ export type PostWithCategory = Prisma.PostGetPayload<{
 
 export type PostWithCategoryAndUser = Prisma.PostGetPayload<{
     include: {
+        _count : {
+            select : {
+                like : true
+            }
+        },
+        
         category: {
             select : {
                 name_category : true
