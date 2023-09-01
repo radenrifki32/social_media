@@ -18,10 +18,11 @@ handleConnection(client: Socket, ...args: any[]) {
 onModuleInit() {
   this.server.on("connection",(socket :Socket)=>{
     console.log(socket.id)
-    console.log("connected")
+    console.log("connected",socket.connected)
   })
 }
 handleDisconnect(client: Socket) {
+  console.log("disconnectt",client.disconnect)
 }
 
 @SubscribeMessage("chat")
