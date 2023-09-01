@@ -5,21 +5,20 @@ import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './category/category.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PostModule } from './post/post.module';
-import { ZodValidationPipe } from 'nestjs-zod'
-import { APP_PIPE } from '@nestjs/core'
+
 import { ThrottlerModule } from '@nestjs/throttler';
 import { LikeModule } from './like/like.module';
 import { CommentModule } from './comment/comment.module';
 import { FavoriteModule } from './favorite/favorite.module';
+import { MenuModule } from './menu/menu.module';
+import { ChatGateway } from './chat/chat.gateway';
+import { ChatModule } from './chat/chat.module';
 
 
 @Module({
   imports: [AuthModule,UserModule, BookmarkModule,CategoryModule, CloudinaryModule,PostModule,ThrottlerModule.forRoot({
     ttl : 60,
     limit : 10
-  }), LikeModule, CommentModule, FavoriteModule],
-  providers :[
-   
-  ]
+  }), LikeModule, CommentModule, FavoriteModule, MenuModule,ChatModule],
 })
 export class AppModule {}

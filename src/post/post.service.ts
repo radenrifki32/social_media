@@ -40,15 +40,13 @@ export class PostService {
         } catch (error) {
             throw new Error(error)
         } finally {
-            await this.prismaService.$disconnect
+             this.prismaService.$disconnect
         }
 
     }
     async GetPost(id_category?: string,token? : string): Promise<PostWithCategoryAndUser[]> {
         try {
-            const decodeJwt: string | { [key: string]: any } = await this.jwtService.verifyAsync(token, {
-                secret: jwtConstant.secretKey
-            })
+
             let postQuery = {
                 include: {
                     _count : {
@@ -56,7 +54,7 @@ export class PostService {
                             like : true
                         }
                       },
-                   
+
                     category: {
                         select: {
                             name_category: true
@@ -70,7 +68,7 @@ export class PostService {
                     },
                     comment : {
                         where : {
-                            parent_comment_id : null 
+                            parent_comment_id : null
                         },
                         include : {
                             children : {
@@ -84,19 +82,19 @@ export class PostService {
                                 }
                             }
                         },
-                        
+
                     }
                 }
             };
-    
+
             if (id_category) {
                 postQuery['where'] = {
                     id_category: id_category
                 };
             }
-    
+
             const getAllPostWithCategoryAndUser = await this.prismaService.post.findMany(postQuery);
-    
+
             return getAllPostWithCategoryAndUser;
         } catch (error) {
             console.log(error)
@@ -105,7 +103,7 @@ export class PostService {
             await this.prismaService.$disconnect();
         }
     }
-    
+
     async yourPost(token: string): Promise<PostWithCategory[]> {
         try {
             const decodeJwt: string | { [key: string]: any } = await this.jwtService.verifyAsync(token, {
@@ -126,13 +124,13 @@ export class PostService {
         } catch (error) {
             throw new Error(error)
         } finally {
-            await this.prismaService.$disconnect
+             this.prismaService.$disconnect
         }
 
     }
 
     async postById (id :string,) : Promise<PostWithCategoryAndUser> {
-       
+
         const post = await this.prismaService.post.findFirst({
             where : {
              id  : id
@@ -143,7 +141,7 @@ export class PostService {
                         like :true
                     },
                 },
-               
+
                 user : {
                     select : {
                         username : true ,
@@ -151,7 +149,7 @@ export class PostService {
                     }
                 },
                 category : {
-                    select : { 
+                    select : {
                         name_category : true
                     }
                 }
@@ -159,7 +157,7 @@ export class PostService {
         })
 return post
     }
-    
+
 
 
 }
